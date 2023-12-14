@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class PlayerInputManager : MonoBehaviour
 {
+    // !!!!!!!!!!!!!!!!!!!!!!!!!! TO REMoooooooooooooooooVEEEE !!!!!!!
+    public static bool debugAction => Input.GetKey(KeyCode.RightShift);
+
 
     // DO I NEED TO USE "=>" OR CHANGE IT BACK TO { get; private set; } ???
     // THIS IS SOMETHING "NEW TO ME" ...
