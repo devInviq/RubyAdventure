@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class DangeousBushesZone : MonoBehaviour
 {
+    private string m_playerTag = "MainPlayerRuby";
+    private float m_bushesDamege = 0.1f;
+
     private void OnTriggerStay2D(Collider2D collision)
     {
-        var playerTag = "MainPlayerRuby";
-        var collisionIsPlayer = collision.gameObject.CompareTag(playerTag);
+        var isPlayer = collision.gameObject.CompareTag(m_playerTag);
 
-        if (collisionIsPlayer)
+        if (isPlayer)
         {
-            var areaDamage = 0.1f;
-
             var playerStats = collision.gameObject.GetComponent<PlayerStats>();
-            playerStats.OnPlayerTakeDamage(areaDamage);
+            playerStats.OnPlayerTakeDamage(m_bushesDamege);
         }
     }
 }
