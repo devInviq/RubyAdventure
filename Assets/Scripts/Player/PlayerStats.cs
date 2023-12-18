@@ -2,10 +2,31 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    public float maxHealth { get; private set; }
+    // Maximum health of the player
+    public float playerMaxHealth { get; private set; }
+
+    public float playerBaseMoveSpeed { get; private set; }
+    public float playerRapidMoveSpeed { get; private set; }
+
+
+    public float playerBaseDamage { get; private set; }
+    public float playerDefense { get; private set; }
+
+
+    public bool playerIsDead { get; private set; }
+
+
+    // Current health of the player
     public float currentHealth { get; private set; }
 
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Debug.Log(currentHealth);
+        }
+    }
 
     private void Start()
     {
@@ -13,24 +34,35 @@ public class PlayerStats : MonoBehaviour
     }
 
 
-    private void Update()
-    {
-        if (PlayerInputManager.debugAction)
-        {
-            Debug.Log($"current player health : {currentHealth}");
-        }
-    }
-
-
+    // Sets default player stats.
     private void OnStartSetDefaultPlayerStats()
     {
-        maxHealth = 100.0f;
-        currentHealth = maxHealth;
+        playerIsDead = false;
+
+        playerMaxHealth = 100.0f;
+        playerBaseMoveSpeed = 5.2f;
+        playerRapidMoveSpeed = 12.4f;
+
+        currentHealth = playerMaxHealth;
     }
 
 
-    public void OnPlayerTakeDamage(float comingDamage)
+    // Reduces player health by a custom amount
+    public void OnPlayerTakeDamage(float damageAmount, float minHealth = 0.0f)
     {
-        currentHealth = Mathf.Clamp(currentHealth -= comingDamage, 0, maxHealth);
+        // Calculate new health after taking damage
+        float newHealth = currentHealth - damageAmount;
+
+        // Clamp new health between 0 and max to prevent values outside valid range
+        newHealth = Mathf.Clamp(newHealth, 0, playerMaxHealth);
+
+        // Update current health to the clamped value
+        currentHealth = newHealth;
+
+
+        if (currentHealth <= minHealth)
+        {
+            playerIsDead = true;
+        }
     }
 }

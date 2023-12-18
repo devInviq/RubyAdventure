@@ -2,12 +2,7 @@ using UnityEngine;
 
 public class PlayerInputManager : MonoBehaviour
 {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!! TO REMoooooooooooooooooVEEEE !!!!!!!
-    public static bool debugAction => Input.GetKey(KeyCode.RightShift);
-
-
-    // DO I NEED TO USE "=>" OR CHANGE IT BACK TO { get; private set; } ???
-    // THIS IS SOMETHING "NEW TO ME" ...
+    // new structure for me.. I used to do { get; private set; }
     public bool pressedShiftButton => Input.GetKey(KeyCode.LeftShift);
     public bool playerIsAbleToMove { get; private set; }
 
@@ -44,16 +39,12 @@ public class PlayerInputManager : MonoBehaviour
     {
         m_xMoveValue = Input.GetAxisRaw("Horizontal");
         m_yMoveValue = Input.GetAxisRaw("Vertical");
-
-        // pressedShiftButton = Input.GetKey(KeyCode.LeftShift);
     }
-    public Vector2 GetMoveDirection()
+    public Vector2 SetMoveDirection()
     {
         m_moveDirection.Set(m_xMoveValue, m_yMoveValue);
         return m_moveDirection;
     }
-
-
 
     public void SetPlayerIsAbleToMoveValue(bool isAble)
     {

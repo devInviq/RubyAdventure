@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5360519796716846825}
   - component: {fileID: 3479124932742458596}
   - component: {fileID: 643734639331960224}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: TropicYellow (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

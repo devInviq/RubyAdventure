@@ -1,40 +1,42 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicEnemyMovingZone : MonoBehaviour
 {
-    [SerializeField] Transform m_pointsToMoveParent;
-    private List<Transform> m_enemyPointsToMove;
+    // ======================================================================= //
 
+    private Transform[] m_enemyMovePoints;
+
+    // ======================================================================= //
 
     private void Awake()
     {
-        FillEnemyPointsToMoveList();
+        FillEnemyPointsToMoveArray();
     }
 
+    // ======================================================================= //
 
-    private void FillEnemyPointsToMoveList()
+    private void FillEnemyPointsToMoveArray()
     {
-        m_enemyPointsToMove = new List<Transform>();
-        m_enemyPointsToMove.Clear();
-
-        int pointsAmount = m_pointsToMoveParent.childCount;
+        int pointsAmount = transform.childCount;
+        m_enemyMovePoints = new Transform[pointsAmount];
 
         if (pointsAmount > 0)
         {
             for (int i = 0; i < pointsAmount; i++)
             {
-                var nextPoint = m_pointsToMoveParent.GetChild(i);
-                m_enemyPointsToMove.Add(nextPoint);
+                var nextPoint = transform.GetChild(i);
+                m_enemyMovePoints[i] = nextPoint;
             }
         }
     }
-    public void GetEnemyPointsToMove(List<Transform> newList)
+    public void GetEnemyPointsToMoveArray(Transform[] enemyArray)
     {
-        var pointsAmount = m_enemyPointsToMove.Count;
-        for(int i = 0; i < pointsAmount; i++)
+        var pointsAmount = m_enemyMovePoints.Length;
+        for (int i = 0; i < pointsAmount; i++)
         {
-            newList.Add(m_enemyPointsToMove[i]);
+            enemyArray[i] = m_enemyMovePoints[i];
         }
     }
+
+    // ======================================================================= //
 }

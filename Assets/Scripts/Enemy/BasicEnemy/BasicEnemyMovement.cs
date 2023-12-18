@@ -1,92 +1,88 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicEnemyMoving : MonoBehaviour
 {
+    // Reference to the movement zone Transform.
     [SerializeField] private Transform m_movingZone;
 
     private Rigidbody2D m_enemyRb;
 
-    // ======================================================================= //
 
-    private List<Transform> m_pointsToMove;
-    public bool reachedThePoint { get; private set; }
-    private int nextIndex;
+    // Array of Transform objects representing the movement points within the zone.
+    private Transform[] m_moveZonePoints;
+    // Index of the next point to move towards.
+    private int nextPointIndex;
 
-    // ======================================================================= //
+    // Flag indicating whether the enemy can move.
+    private bool m_isAbleToMove;
+    // Basic movement speed of the enemy.
+    private float m_baseSpeed = 4.2f;
 
-    private bool m_enemyIsAbleToMove;
-    private float m_basicSpeed = 12.4f;
-    // private float m_rapidSpeed;
-
-    // ======================================================================= //
 
     private void Start()
     {
-        OnStartFillEnemyPointsToMoveList();
-        m_enemyIsAbleToMove = true;
+        // Initialize movement points and enable movement.
+        FillEnenyPointsToMoveArray();
+        m_isAbleToMove = true;
 
+        // Get enemy Rigidbody and set starting index.
         m_enemyRb = GetComponent<Rigidbody2D>();
-        reachedThePoint = false;
-        nextIndex = 0;
+        nextPointIndex = 0;
     }
 
     private void Update()
     {
-        if (m_enemyIsAbleToMove)
+        // Move enemy if allowed.
+        if (m_isAbleToMove)
         {
-            MoveEnemyInCircle();
+            MoveEnemyInRandomWay();
         }
     }
 
-    // ======================================================================= //
 
-    private void OnStartFillEnemyPointsToMoveList()
+    private void FillEnenyPointsToMoveArray()
     {
-        m_pointsToMove = new List<Transform>();
-        m_pointsToMove.Clear();
-
-        var zoneScript = m_movingZone.gameObject.GetComponent<BasicEnemyMovingZone>();
-        if (zoneScript != null)
+        // Check if the moving zone component exists.
+        if (m_movingZone.TryGetComponent(out BasicEnemyMovingZone movingZone))
         {
-            zoneScript.GetEnemyPointsToMove(m_pointsToMove);
+            // Get the number of movement points from the zone.
+            var pointsAmount = m_movingZone.childCount;
+            // Initialize and populate the move points array.
+            m_moveZonePoints = new Transform[pointsAmount];
+            movingZone.GetEnemyPointsToMoveArray(m_moveZonePoints);
         }
     }
 
-    // ======================================================================= //
 
-    private void MoveEnemyInCircle()
+    private void MoveEnemyInRandomWay()
     {
+        // Check if the enemy has reached the current point.
+        OnReachNextPointPosition();
+
+        // Calculate direction vector from current position to next point.
         Vector2 enemyCurrentPosition = m_enemyRb.position;
-        Vector2 nextPointPosition = m_pointsToMove[nextIndex].position;
-
+        Vector2 nextPointPosition = m_moveZonePoints[nextPointIndex].position;
         var direction = nextPointPosition - enemyCurrentPosition;
+
+        // Normalize and scale direction by "speed".
         direction.Normalize();
+        direction *= (m_baseSpeed * Time.deltaTime);
 
-        direction *= m_basicSpeed * Time.deltaTime;
-        var newPosition = enemyCurrentPosition + direction;
-        m_enemyRb.MovePosition(newPosition);
-
-        // Debug.Log($"next point {m_pointsToMove[m_nextIndex].position}");
+        // Update enemy position with calculated movement.
+        m_enemyRb.MovePosition(enemyCurrentPosition + direction);
     }
-    public void OnEnemyReachTheDestination(bool reached, int startIndex = 0, bool afterActionValue = false)
+    private void OnReachNextPointPosition(float minDistance = 2.0f)
     {
-        reachedThePoint = reached;
+        Vector2 currentPosition = m_enemyRb.position;
+        Vector2 nextPointPosition = m_moveZonePoints[nextPointIndex].position;
 
-        if (reachedThePoint)
+        // Calculate squared distance to current position to next point position.
+        float distanceSquared = (currentPosition - nextPointPosition).sqrMagnitude;
+
+        // Randomly change point if close enough to current one.
+        if (distanceSquared < minDistance)
         {
-            if (nextIndex >= m_pointsToMove.Count - 1)
-            {
-                nextIndex = startIndex;
-            }
-            else
-            {
-                nextIndex++;
-            }
-
-            reachedThePoint = afterActionValue;
+            nextPointIndex = Random.Range(0, m_moveZonePoints.Length);
         }
     }
-
-    // ======================================================================= //
 }
